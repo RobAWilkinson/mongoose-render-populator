@@ -1,0 +1,16 @@
+{
+  "name": "jumpstart-populator",
+  "version": "0.0.1",
+  "description": "Populates the MongoDB database with data it can",
+  "main": "populate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies":{
+    "async":"latest",
+    "buffer-crc32":"latest"
+
+  },
+  "author": "Sam Tobia",
+  "license": "ISC"
+}
