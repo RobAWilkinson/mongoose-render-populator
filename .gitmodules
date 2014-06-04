@@ -1,0 +1,12 @@
+[submodule "libvpx"]
+	path = libvpx_modules/libvpx
+	url = https://chromium.googlesource.com/webm/libvpx
+[submodule "yasm"]
+	path = libvpx_modules/yasm
+	url = git://github.com/yasm/yasm.git
+[submodule "libvpx_modules/yasm"]
+	path = libvpx_modules/yasm
+	url = git://github.com/yasm/yasm.git
+[submodule "libvpx_modules/libvpx"]
+	path = libvpx_modules/libvpx
+	url = https://chromium.googlesource.com/webm/libvpx
