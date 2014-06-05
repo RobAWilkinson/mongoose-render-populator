@@ -2,23 +2,13 @@ var crc32 = require("buffer-crc32");
 var zlib = require("zlib");
 var fs = require("fs");
 
-var pngcreate = function(scanlines,options,next){
-var numchunks = 64;
-var width;
-var height;
-if(Array.isArray(scanlines[0])){
-
-	options.width = scanlines[0].length;
-	options.height = scanlines.length
-	scanlines = scanlines2Array(scanlines);
-}
-if(typeof options == "undefined"){
-	width=100;
-	height=100;
-}else{
-	var width = options.hasOwnProperty("width")?options.width:100;
-	var height = options.hasOwnProperty("height")?options.height:100;
-}
+var pngcreate = function(options,next){
+if(!options.hasOwnProperty("width"))
+	throw new Error("need to specify frame width:options.width");
+if(!options.hasOwnProperty("height"))
+	throw new Error("need to specify frame height:options.height");
+var width = options.width;
+var height = options.height;
 
 var butter = [];
 butter[0] = new Buffer(8);
@@ -41,11 +31,9 @@ butter[1] = writeChunk("IHDR",[
 	"8$"+0
 ]);
 
-zlib.deflate(getAsBuffer(scanlines),function(err,result){
-	if(err){
-		throw err
-//		return next(err);
-	}
+zlib.deflate(generateImage(width,height,options.pixleHandler),function(err,result){
+	if(err)
+		return next(err);
 	butter[butter.length] = writeChunk(
 		"IDAT",
 		result
@@ -109,22 +97,24 @@ for(var i=0;i<array.length;i++){
 return buffed;
 }
 
-function scanlines2Array(scanlines){
-	var initlength = scanlines.length
-	for(var h=0;h<initlength;h++){
-	scanlines.push("8$0");
-		for(var w=0;w<scanlines[0].length;w++){
-		scanlines.push(
-			"8$"+scanlines[0][w][0],
-			"8$"+scanlines[0][w][1],
-			"8$"+scanlines[0][w][2],
-			"8$"+scanlines[0][w][3]
-		);
-		}
-	scanlines.shift();
-	}
+function generateImage(width,height,pixleCallback){
+var scanlines = [];
+console.log(width);
+console.log(height);
 
-	return scanlines;
+for(var h=0;h<height;h++){
+	scanlines.push(new Buffer(1+width*4));
+	scanlines[h].writeUInt8(0,0);
+	for(var w=0;w<width;w++){
+		var pixle = pixleCallback(w,h);
+		for(var i=0;i<4;i++){
+			scanlines[h].writeUInt8(pixle[i],i+w*4+1);
+		}
+	}
+}
+console.log(scanlines.length);
+console.log(scanlines[0].length);
+return Buffer.concat(scanlines);
 }
 
 module.exports = pngcreate;

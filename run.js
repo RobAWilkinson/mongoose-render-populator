@@ -1,14 +1,16 @@
-
 var fs = require("fs");
+var ncp = require("ncp");
+var async = require("async");
 var mongoose_path;
-if(process.env.hasOwnProperty("mongoose_path"))
+if(process.env.hasOwnProperty("mongoose_path")){
 	dbpath = process.env.mongoose_path;
-else
+	console.log(dbpath);	
+}else
 	dbpath = __root+"/..";
 
 if(!fs.existsSync(dbpath))
 	console.log("warning can't find path");
-	if(!fs.existsSync(__dirname+"/"+dbpath)
+	if(!fs.existsSync(__dirname+"/"+dbpath))
 		throw new Error("Non-exsistant path");
 	else
 		dbpath = __dirname+"/"+dbpath;
@@ -21,25 +23,28 @@ if(fs.readdirSync(dbpath+"/models").length > 0
 
 var files = fs.readdirSync(dbpath+"/models");
 files.forEach(function(file){
-
-fs.unlinkSync(dbpath+"/models/"+files);
-
+fs.unlinkSync(dbpath+"/models/"+file);
 });
 
 var config = require(dbpath+"/config.json");
 
 GLOBAL.__root = __dirname;
-GLOBAL.__temp = generateString();
 GLOBAL.__mongoose = dbpath;
 
-fs.mkdirSync(__dirname+"/"+__temp);
+var files = fs.readdirSync(__dirname+"/models");
 
-require(mongoose_path+"/framework/database.js")(config.mongo,true,require("./populate"));
+async.each(files,function(file, next){
+	ncp(
+		__dirname+"/models/"+file,
+		__mongoose+"/models/"+file,
+		function(){
+			next();
+		}
+	);
+},function(end){
+require(__mongoose+"/framework/database.js")(config.mongo,true,require("./populate"));
 
-function generateString(){
-var text = "";
-var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
-for(var i=0;i<16;i++)
-  text += possible.charAt(Math.floor(Math.random() * possible.length));
-return text;
-}
+});
+
+
+

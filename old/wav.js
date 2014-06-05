@@ -1,4 +1,4 @@
-var wavcreate = require("./reusables/wavcreate")
+var wavcreate = require("../reusables/wavcreate")
 
 var randoms =[];
 var freqs = [];
@@ -8,7 +8,7 @@ for(var i=0;i<2;i++){
 }
 
 var sops = {
-	filename: __dirname+"/generated_files/random.wav",
+	filename: __dirname+"/../generated_files/random.wav",
 	length: 10,
 	num_channels: 2,
 	pitchHandler: function(time,channel){
