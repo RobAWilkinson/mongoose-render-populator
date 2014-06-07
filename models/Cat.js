@@ -6,7 +6,8 @@ var schema = new mongoose.Schema({
     required:true
   },
   color: String,
-  scale: Number
+  scale: Number,
+  meow: "Sound"
 });
 
 var Cat = mongoose.model('Cat', schema);

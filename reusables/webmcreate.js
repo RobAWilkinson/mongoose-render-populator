@@ -3,6 +3,7 @@ var fs = require("fs");
 var child = require('child_process');
 var exec = child.exec;
 var spawn = child.spawn;
+var ncp = require("ncp");
 var pngcreate = require("./pngcreate");
 var wavcreate = require("./wavcreate");
 
@@ -33,8 +34,6 @@ if(!options.hasOwnProperty("pitchHandler"))
 	throw new Error("need to specify a pitch Handler:options.pitchHandler");
 if(!options.hasOwnProperty("num_channels"))
 	throw new Error("need to specify number of channels:options.num_channels");
-if(!options.hasOwnProperty("filename"))
-	throw new Error("need to specify filepath:options.filename");
 
 options.appendix = Array(Math.floor(Math.log(options.length*24))).join("0");
 
@@ -62,7 +61,7 @@ var pops = {
 	filename:__temp+"/vp8png"+current+".png"
 };
 
-var buffer = pngcreate(pops, 
+var buffer = pngcreate(pops,
 function(err, file){
 	if(err)
 		return options.callback(err);
@@ -79,7 +78,7 @@ function(err, file){
 function handleAudio(options){
 var currentpitch = [
 	wavcreate.randomPitch(),
-	wavcreate.randomPitch()	
+	wavcreate.randomPitch()
 ];
 var sops = {
 	filename: __temp+"/temp.wav",
@@ -103,7 +102,7 @@ function encodeAndReturn(options){
 
 var png2yuvcommand = "png2yuv -I p -f 24 -b 1 -n "+options.length*24+" -j \""+__temp+"/vp8png%0"+(options.appendix.length-1)+"d.png\" > \""+__temp+"/temp.yuv\"";
 var makevideocommand = "vpxenc --good --cpu-used=0 --auto-alt-ref=1 --lag-in-frames=16 --end-usage=vbr --passes=2 --threads=2 --target-bitrate=3000 -o \""+__temp+"/temp.webm\" \""+__temp+"/temp.yuv\""
-var addsoundcommand = "ffmpeg -i \""+__temp+"/temp.webm\" -i \""+__temp+"/temp.wav\" -map 0:0 -map 1:0 \""+options.filename+"\""
+var addsoundcommand = "ffmpeg -i \""+__temp+"/temp.webm\" -i \""+__temp+"/temp.wav\" -map 0:0 -map 1:0 \""+__temp+"/temp.webm\""
 exec(png2yuvcommand, function(err, stdout, stderr){
 if(stderr)
 	console.log(stderr);
@@ -114,20 +113,37 @@ exec(makevideocommand, function(err, stdout, stderr){
 if(err)
 	return options.callback(err);
 console.log("make video");
-
-if(fs.existsSync(options.filename))
-	fs.unlinkSync(options.filename)
-
 exec(addsoundcommand, function(err, stdout, stderr){
 if(err)
 	return options.callback(err);
 console.log("removing");
+
+if(options.hasOwnProperty("filename")){
+	return ncp(__temp+"/temp.webm", options.filename, function (err) {
+		files = fs.readdirSync(__temp);
+		files.forEach(function(file){
+			fs.unlinkSync(__temp+"/"+file)
+		});
+		fs.rmdirSync(__temp);
+		if (err) {
+			return next(err);
+		}
+		options.callback(void(0), options.filename);
+	});
+}
+var stats = fs.statSync(__temp+"/temp.webm");
+var buffed = new Buffer(stats.size);
+var fd = fs.openSync(__temp+"/temp.webm","r");
+fs.readSync(fd,buffed,0,stats.size,0);
+fs.closeSync(fd);
+
 files = fs.readdirSync(__temp);
 files.forEach(function(file){
 	fs.unlinkSync(__temp+"/"+file)
 });
 fs.rmdirSync(__temp);
-options.callback(void(0),options.filename);
+
+options.callback(void(0),buffed);
 });
 });
 

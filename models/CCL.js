@@ -21,7 +21,8 @@ var schema = new mongoose.Schema({
       required: true
     }
   },
-  Cats: [{type: mongoose.Schema.Types.ObjectId, ref:"Cat"}]
+  Cats: [{type: mongoose.Schema.Types.ObjectId, ref:"Cat"}],
+  grimy_window: "Image"
 });
 
 var CrazyCatLady = mongoose.model('CrazyCatLady', schema);

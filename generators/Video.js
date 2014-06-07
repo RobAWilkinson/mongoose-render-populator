@@ -30,19 +30,17 @@ options.pixleHandler = function(frame, x, y){
 
 var currentpitch = [
 	wavcreate.randomPitch(),
-	wavcreate.randomPitch()	
+	wavcreate.randomPitch()
 ];
 
 options.pitchHandler = function(time,channel){
 	currentpitch[channel] += Math.round((Math.random()-.5)*2*time);
 	return currentpitch[channel];
 };
-webmcreate(options, function(err, path){
+webmcreate(options, function(err, data){
 	if(err)
 		throw err;
-	var ret = new Mime64(path);
-	fs.unlinkSync(path);
+	var ret = {mimetype:"video/webm", data:data};
 	next(ret);
 });
 }
-

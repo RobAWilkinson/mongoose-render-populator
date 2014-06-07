@@ -5,6 +5,7 @@ function Mime64(mimetype, data){
 
   if(arguments.length == 0){
   }else if(arguments.length == 1){
+    console.log(typeof mimetype);
     if(typeof mimetype == "string")
       ret = this._fromSource(mimetype);
     else if(value instanceof JSONObject)
@@ -16,9 +17,9 @@ function Mime64(mimetype, data){
   }else{
     if(typeof data == "undefined" || data == "" || data === null)
       this.data = "";
-    else if(Buffer.isBuffer(value.data))
+    else if(Buffer.isBuffer(data))
       this.data = data.toString("base64");
-    else if(typeof value.data == "string"){
+    else if(typeof data == "string"){
       if(!data.match(b64regex))
         throw new Error("Mime64: the data is not a valid base64 encoded string");
       this.data = data;
@@ -58,7 +59,7 @@ Mime64.prototype._fromJSON = function(value){
 }
 
 Mime64.prototype._fromSource = function(value){
-  if(typeof value == "string")
+  if(typeof value != "string")
     throw new Error("Mime64: first argument must be a string when using \"fromSource\" method")
   if(value.index("data:") == -1)
     throw new Error("Mime64: Need to specify a header when storing a base64 string")

@@ -4,7 +4,7 @@ var pgens = {};
 
 var files = fs.readdirSync(__root+"/generators");
 files.forEach(function(file){
-pgens[file.substring(file.indexOf("."))] = require(__root+"/generators/"+file);
+pgens[file.substring(0,file.indexOf("."))] = require(__root+"/generators/"+file);
 });
 
 
@@ -14,6 +14,9 @@ module.exports = function (path, type, next){
 	if(typeof type == "undefined"){
 		throw new Error("undefined path type");
 	}
+console.log(type);
+
+console.log(pgens.hasOwnProperty(type));
   if(pgens.hasOwnProperty(type)){
     return pgens[type](next);
   }

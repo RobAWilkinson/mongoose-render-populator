@@ -1,8 +1,8 @@
 var pngcreate = require("../reusables/pngcreate");
 var Mime64 = require("../Mime64.js");
 
-var width = 200;
-var height = 200;
+var width = 100;
+var height = 100;
 
 module.exports = function(next){
 var colors = []
@@ -17,7 +17,8 @@ for(var i=0;i<4;i++)
 
 
 var pops = {
-	filename:__root+"/generated_files/random.png",
+	width:width,
+	height:height,
 	pixleHandler:function(nn,n){
 		var average = []
 		for(var i=0;i<4;i++){
@@ -31,11 +32,10 @@ var pops = {
 	}
 };
 
-pngcreate(pops, function(err,path){
+pngcreate(pops, function(err,data){
 if(err)
 	throw err;
-var ret = new Mime64(path);
-fs.unlinkSync(path);
+var ret = {mimetype:"image/png",data:data};
 next(ret);
 });
 }
