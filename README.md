@@ -15,7 +15,7 @@ If you wish to run it on a dirty jumpstart instance you can add
 ```
 This will delete everything in your database as well as all models in your models folder.
 
-It then creates CrazyCatLadies and Cats for your testing purposes
+It then creates Crazy Cat Ladies, Apartment Managers and Cats for your testing purposes
 
 
 ========================
@@ -38,6 +38,9 @@ cd libvpx_modules/libvpx
 make
 # make install
 
+npm install
+
+node index
 ```
 
 Its not how I prefer, but since video encoding is much different from image encoding, its what I had to do.
