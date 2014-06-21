@@ -1,4 +1,5 @@
 var webmcreate = require("../reusables/webmcreate.js");
+var wavcreate = require("../reusables/wavcreate.js");
 var Mime64 = require("../Mime64.js");
 var options = {
 	length:10,
@@ -14,7 +15,7 @@ var dotposition = [
 ];
 var lastframe = 0;
 
-options.pixleHandler = function(frame, x, y){
+options.pixleHandler = function(frame, w, h){
 	if(lastframe != frame){
 		dotposition[0] += Math.round((.5-Math.random())*1.5);
 		dotposition[1] += Math.round((.5-Math.random())*1.5);
@@ -22,9 +23,9 @@ options.pixleHandler = function(frame, x, y){
 	}
 	if(dotposition[0] <= w+1 && dotposition[0] >= w-1
 	&& dotposition[1] <= h+1 && dotposition[1] >= h-1){
-		scanlines[h][w] = [0,0,0,255];
+		return [0,0,0,255];
 	}else{
-		scanlines[h][w] = [255,255,255,255];
+		return [255,255,255,255];
 	}
 };
 

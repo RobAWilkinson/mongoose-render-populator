@@ -43,6 +43,7 @@ zlib.deflate(generateImage(width,height,options.pixleHandler),function(err,resul
 	if(options.hasOwnProperty("filename")){
 		var fd = fs.openSync(options.filename, 'w');
 		fs.write(fd, finalBuff,0,finalBuff.length,0, function(err){
+			fs.closeSync(fd);
 			if(err)
 				return next(err);
 			next(void(0),options.filename);
